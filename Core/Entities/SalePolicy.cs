@@ -9,7 +9,7 @@ namespace Core.Models
     /// <summary>
     /// Скидки (глобально для всех сеансов)
     /// </summary>
-    internal class SalePolicy
+    public class SalePolicy
     {
         public int Value { get; set; }
         public DateOnly PolicyStart { get; set; }

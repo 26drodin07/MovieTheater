@@ -8,15 +8,11 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    internal interface IMovieRepo
+    public interface IMovieRepo
     {
-        ICollection<Movie> GetMovies();
-        ICollection<Movie> SearchMovieByName(string name, MovieFiltersDTO filters);
-        ICollection<Movie> GetMoviesByReleaseDate(DateTime date);
-
-        ICollection<CinemaHall> GetMovieHalls();
-        ICollection<MovieSession> GetSessions();
-        ICollection<MovieSession> GetSessions(int movieId);
+        Task<ICollection<Movie>> GetMovies();
+        Task<ICollection<Movie>> SearchMovieByName(string name, MovieFiltersDTO filters);
+       
 
     }
 }
