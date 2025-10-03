@@ -9,10 +9,10 @@ namespace MovieTheater.Controllers
     [ApiController]
     public class MoviesController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public MoviesController(IUnitOfWork unitOfWork) 
+        private readonly IMovieRepo _movieRepo;
+        public MoviesController(IMovieRepo movieRepo) 
         {
-            _unitOfWork = unitOfWork;
+            _movieRepo = movieRepo;
         }
         // GET: api/<MoviesController>
         [HttpGet]
