@@ -18,6 +18,8 @@ namespace Core.Models
         public CinemaHall CinemaHall { get; set; }
         public bool IsCanceled { get; set; }
         public DateTime StartDateTime { get; set; }
+        public decimal FallBackPrice { get; set; }
+        public ICollection<PricePolicy> PricePolices { get; set; } = new List<PricePolicy>();
         public MovieSession(Movie movie, CinemaHall cinemaHall)
         { 
             Movie = movie;

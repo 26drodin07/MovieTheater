@@ -14,6 +14,6 @@ namespace Core.Models
         public int Id { get; set; }
         public decimal Price { get; set; }
         public DateOnly PolicyStart { get; set; }
-        public DateOnly PolicyEnd { get; set; }
+        public DateOnly? PolicyEnd { get; set; }
     }
 }

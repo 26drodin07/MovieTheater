@@ -13,7 +13,7 @@ namespace Core.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public DateOnly ReleaseDate { get; set; } = new();
+        public int ReleaseDate { get; set; } = 0;
         /// <summary>
         /// В прокате ли фильм
         /// </summary>
