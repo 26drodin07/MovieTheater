@@ -70,5 +70,21 @@ namespace Application.Extensions
             return source.Search(prompt);
         }
 
+        public static MovieGetDTO ToGetDTO(this Movie source) 
+        {
+            return new MovieGetDTO(
+                source.Id,
+                source.Name,
+                source.ReleaseDate,
+                source.IsInTheaters,
+                source.PGRating,
+                source.Duration,
+                source.MovieGenres.Select(x => x.ToGetDTO()).ToList(),
+                source.Image);
+        }
+        public static GenreGetDTO ToGetDTO(this MovieGenre source) 
+        {
+            return new GenreGetDTO(source.Id, source.Name);
+        }
     }
 }

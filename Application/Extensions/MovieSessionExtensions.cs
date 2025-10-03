@@ -12,7 +12,6 @@ namespace Application.Extensions
         public static decimal GetCurrentPrice(this MovieSession movieSession)
         {
             var pricePolicy = movieSession.GetActivePricePolicy();
-
             return pricePolicy?.Price ?? movieSession.FallBackPrice;
         }
         public static PricePolicy? GetActivePricePolicy(this MovieSession movieSession)
