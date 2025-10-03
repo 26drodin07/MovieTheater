@@ -10,8 +10,8 @@ namespace Core.Interfaces
 {
     public interface IMovieRepo
     {
-        Task<ICollection<Movie>> GetMovies();
-        Task<ICollection<Movie>> SearchMovieByName(string name, MovieFiltersDTO filters);
+        Task<ICollection<MovieGetDTO>> GetMovies();
+        Task<ICollection<MovieGetDTO>> GetFiltered(string name, MovieFiltersDTO filters);
        
 
     }

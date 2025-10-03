@@ -1,7 +1,9 @@
-﻿using Application.Interfaces;
+﻿using Application.Extensions;
+using Application.Interfaces;
 using Core.DTOs;
 using Core.Interfaces;
 using Core.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +22,12 @@ namespace Application.Repos
 
         
 
-        public async Task<ICollection<Movie>> GetMovies()
+        public async Task<ICollection<MovieGetDTO>> GetMovies()
         {
-            throw new NotImplementedException();
+            return await _db.Movies.Select(x=>x.ToGetDTO()).ToListAsync();
         }
 
-        public async Task<ICollection<Movie>> SearchMovieByName(string name, MovieFiltersDTO filters)
+        public async Task<ICollection<MovieGetDTO>> GetFiltered(string name, MovieFiltersDTO filters)
         {
             throw new NotImplementedException();
         }
