@@ -3,6 +3,7 @@ using Application.Repos;
 using Core.Interfaces;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using MovieTheater.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<HandleExceptionMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
