@@ -1,4 +1,5 @@
-﻿using Core.DTOs.Get;
+﻿using Core.DTOs;
+using Core.DTOs.Get;
 using Core.DTOs.Patch;
 using Core.DTOs.Post;
 using Core.DTOs.Put;
@@ -16,14 +17,15 @@ namespace Core.Interfaces
         Task<ICollection<MovieSessionGetDTO>> GetSessions();
         Task<MovieSessionGetDTO> GetSessionById(int id);
         Task<ICollection<MovieSessionGetDTO>> GetSessionsByMovie(int movieId);
+        Task<ICollection<SessionGroupedByFilmsDTO>> GetFilteredSessions(bool isActive, string?searchPrompt, SessionFiltersDTO filters);
         Task<ICollection<SessionGroupedByFilmsDTO>> GetGroupedByFilm();
         Task<MovieSessionGetDTO> AddSession(SessionPostDTO movieSession);
-        Task<MovieSessionGetDTO> UpdateSession(SessionPatchDTO movieSession);
+        Task<MovieSessionGetDTO> UpdateSession(SessionPatchDTO movieSession, int id);
         Task<int> DeleteSession(int id);
         //Кастомные цены
         Task<MovieSessionGetDTO> AddCustomPrice(int sessionId, PricePolicyPostDTO priceDto);
         Task<ICollection<PricePolicyGetDTO>> GetCustomPrices(int sessionId);
-        Task<PricePolicyGetDTO> UpdateCustomPrice(int id, int sessionId, PricePolicyPatchDTO priceDto);
+        Task<PricePolicyGetDTO> UpdateCustomPrice(int id,PricePolicyPatchDTO priceDto);
         Task<int> DeleteCustomPrice(int id);
 
         Task<SalePolicyGetDTO> PutSale(SalePolicyPutDTO dto);

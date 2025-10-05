@@ -57,9 +57,9 @@ namespace Application.Extensions
         {
             var result = source;
             if (priceMin != null)
-                result.Where(m => m.Sessions.Min(ms => ms.GetCurrentPrice(saleCoof))  > priceMin);
+                result.Where(m => m.Sessions.Min(ms => ms.GetCurrentPrice(saleCoof)) > priceMin);
             if (priceMax != null)
-                result.Where(m => m.Sessions.Max(ms => ms.GetCurrentPrice(saleCoof))  < priceMax);
+                result.Where(m => m.Sessions.Max(ms => ms.GetCurrentPrice(saleCoof)) < priceMax);
             return result;
         }
         public static IQueryable<Movie> ApplyGenreFilters(this IQueryable<Movie> source, ICollection<int>? genreIds)
@@ -67,12 +67,26 @@ namespace Application.Extensions
             if (genreIds == null) return source;
             return source.Where(movie => movie.MovieGenres.Select(g => g.Id).Any(id => genreIds.Contains(id)));
         }
-
-        public static IQueryable<Movie> Search(this IQueryable<Movie> source, string prompt)
+        public static IQueryable<Movie> Search(this IQueryable<Movie> source, string? prompt)
         {
-            return source.Search(prompt);
+            if (string.IsNullOrWhiteSpace(prompt))
+                return source;
+            return source.Where(x => x.Name.ToLower().Contains(prompt.ToLower()));
         }
 
+        /// <summary>
+        /// Вернет отсортированный по первому сеансу список. Включить Sessions
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<Movie> OrderByFirstSession(this IQueryable<Movie> source)
+        {
+            //тут не придумал как обойти нормально фильмы у которых нет сеанса - т.е первая сеанс будет null поэтому вручную вскладываю такие фильмы в хвост
+            var withSessions = source.Where(m => m.Sessions.Any()).OrderBy(m => m.Sessions.OrderBy(x => x.ActivationDate).FirstOrDefault());
+            var withoutSessions = source.Where(m => !m.Sessions.Any());
+            var result = withoutSessions.Concat(withoutSessions);
+            return result;
+        }
         /// <summary>
         /// Преобразование к DTO (В query нужны Genres и Sessions)
         /// </summary>
@@ -100,17 +114,17 @@ namespace Application.Extensions
             return new GenreGetDTO(source.Id, source.Name);
         }
 
-        public static Movie ToModel(this MoviePostDTO dto, byte[]? bytes) 
+        public static Movie ToModel(this MoviePostDTO dto, byte[]? bytes)
         {
-            Movie model = new() 
-                {
-                    Duration = dto.Duration,
-                    IsInTheaters = dto.IsInTheaters,
-                    Name = dto.Name,
-                    PGRating = dto.PGRating,
-                    ReleaseDate = dto.ReleaseDate,
-                    Image = bytes
-                };
+            Movie model = new()
+            {
+                Duration = dto.Duration,
+                IsInTheaters = dto.IsInTheaters,
+                Name = dto.Name,
+                PGRating = dto.PGRating,
+                ReleaseDate = dto.ReleaseDate,
+                Image = bytes
+            };
             return model;
         }
         public static MovieSession? getNearestSession(this IEnumerable<MovieSession> source)

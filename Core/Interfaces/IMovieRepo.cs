@@ -24,7 +24,7 @@ namespace Core.Interfaces
         /// <param name="name"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        Task<ICollection<MovieGetDTO>> GetFiltered(string name, MovieFiltersDTO filters);
+        Task<ICollection<MovieGetDTO>> GetFiltered(string? name, MovieFiltersDTO filters);
         /// <summary>
         /// Снять с проката
         /// </summary>

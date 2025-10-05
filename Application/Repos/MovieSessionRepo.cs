@@ -1,5 +1,6 @@
 ﻿using Application.Extensions;
 using Application.Interfaces;
+using Core.DTOs;
 using Core.DTOs.Get;
 using Core.DTOs.Patch;
 using Core.DTOs.Post;
@@ -8,6 +9,7 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -32,7 +34,8 @@ namespace Application.Repos
         {
             var sale = (await _db.SalePolicies.GetCurrentSaleAsync())?.Value ?? 1m;
             var Movie = await _db.Movies.SingleOrDefaultAsync(x => x.Id == dto.MovieId);
-            if (Movie == null) throw new NotFoundException($"No movie with id {dto.MovieId}");
+            if (Movie == null) throw new NotFoundException($"Фильм с id {dto.MovieId} не найден");
+            if (!Movie.IsInTheaters) throw new BadRequestException($"Фильм с id {dto.MovieId} снят с проката");
             var CinemaHall = await _db.CinemaHalls
                 .Include(ch => ch.MovieSessions).ThenInclude(x => x.Movie)
                 .SingleOrDefaultAsync(x => x.Id == dto.CinemaHallId);
@@ -67,8 +70,25 @@ namespace Application.Repos
         public async Task<ICollection<MovieSessionGetDTO>> GetSessions()
         {
             var sale = (await _db.SalePolicies.GetCurrentSaleAsync())?.Value ?? 1m;
-            return await _db.Sessions.Include(x => x.PricePolices)
+            return await _db.Sessions.Include(x => x.PricePolices).OrderBy(x => x.StartTime)
                 .Select(x => x.ToGetDTO(sale)).ToListAsync();
+        }
+        public async Task<ICollection<SessionGroupedByFilmsDTO>> GetFilteredSessions(bool isActive, string? searchPrompt, SessionFiltersDTO filters)
+        {
+            var sale = (await _db.SalePolicies.GetCurrentSaleAsync())?.Value ?? 1m;
+            IQueryable<MovieSession> activeFilteredSessions = _db.Sessions.Include(x => x.PricePolices).Include(x=>x.Movie).Include(x=>x.CinemaHall);
+            if (isActive)
+                activeFilteredSessions = activeFilteredSessions.Where(x => !x.IsCanceled && x.ActivationDate.AddDays(x.DurationInDays) >= DateTime.UtcNow.Date);
+            else
+                activeFilteredSessions = activeFilteredSessions.Where(x => x.IsCanceled || x.ActivationDate.AddDays(x.DurationInDays) < DateTime.UtcNow.Date);
+            return await activeFilteredSessions.ApplyAllFilters(filters, sale)
+                .GroupBy(x => x.Movie).OrderBy(m => m.OrderBy(x => x.ActivationDate).FirstOrDefault())
+                .Select(x => 
+                    new SessionGroupedByFilmsDTO(
+                        x.Key.Id, 
+                        x.OrderBy(x => x.StartTime).Select(x => x.ToGetDTO(sale)).ToList())
+                    )
+                .ToListAsync();
         }
 
         public async Task<ICollection<MovieSessionGetDTO>> GetSessionsByMovie(int movieId)
@@ -103,7 +123,9 @@ namespace Application.Repos
             if (dto.MovieId != null)
             {
                 var Movie = await _db.Movies.SingleOrDefaultAsync(x => x.Id == dto.MovieId);
-                if (Movie == null) throw new NotFoundException($"No movie with id {dto.MovieId}");
+                if (Movie == null) throw new NotFoundException($"Фильм с id {dto.MovieId} снят с проката");
+                if (!Movie.IsInTheaters) throw new BadRequestException($"Фильм с id {dto.MovieId} снят с проката");
+
                 sessionToUpdate.Movie = Movie;
             }
             if (dto.CinemaHallId != null)
@@ -216,14 +238,14 @@ namespace Application.Repos
 
         public async Task<SalePolicyGetDTO> PutSale(SalePolicyPutDTO dto)
         {
-            var putSale = _db.SalePolicies.AsTracking().SingleOrDefault(x=>x.PolicyStart.Date == dto.startDate.Date);
+            var putSale = _db.SalePolicies.AsTracking().SingleOrDefault(x => x.PolicyStart.Date == dto.startDate.Date);
             if (putSale == null)
             {
                 putSale = new SalePolicy() { PolicyStart = dto.startDate.Date, Value = dto.saleCoof };
                 _db.SalePolicies.Add(putSale);
             }
             else
-            { 
+            {
                 putSale.PolicyStart = dto.startDate.Date;
                 putSale.Value = dto.saleCoof;
             }
