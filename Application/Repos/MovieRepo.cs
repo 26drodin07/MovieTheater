@@ -120,15 +120,24 @@ namespace Application.Repos
 
         public async Task<GenreGetDTO> UpdateGenre(GenrePostDTO genre, int id)
         {
-            var GenreToUpdate = await _db.Genres.AsTracking().SingleOrDefaultAsync(x => x.Id == id);
-            if (GenreToUpdate == null)
-                throw new NotFoundException($"Жанра с id {id} не найдено");
+            var genreToUpdate = await _db.Genres.AsTracking().SingleOrDefaultAsync(x => x.Id == id);
+            if (genreToUpdate == null)
+                throw new NotFoundException($"Жанр с id {id} не найден");
 
-            GenreToUpdate.Name = genre.Name;
+            genreToUpdate.Name = genre.Name;
             await _db.SaveChangesAsync();
-            return GenreToUpdate.ToGetDTO();
+            return genreToUpdate.ToGetDTO();
         }
+        public async Task<int> RemoveGenre(int id)
+        {
+            var genreToRemove = await _db.Genres.SingleOrDefaultAsync(x => x.Id == id);
+            if (genreToRemove == null)
+                throw new NotFoundException($"Жанр с id {id} не найден");
 
+            _db.Genres.Remove(genreToRemove);
+            await _db.SaveChangesAsync();
+            return id;
+        }
 
         private void SessionScheduleValidation(MovieSession session, Movie movie)
         {

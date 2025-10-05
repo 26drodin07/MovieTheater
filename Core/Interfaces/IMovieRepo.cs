@@ -41,6 +41,6 @@ namespace Core.Interfaces
         Task<GenreGetDTO> AddGenre(GenrePostDTO genre);
         Task<GenreGetDTO> UpdateGenre(GenrePostDTO genre, int id);
 
-
+        Task<int> RemoveGenre(int id);
     }
 }
