@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.DTOs
 {
-    public class MovieSessionGetDTO
+    public class DailySessionDTO
     {
     }
 }

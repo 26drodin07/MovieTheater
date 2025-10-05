@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.DTOs
+namespace Core.DTOs.Put
 {
-    public record GenreGetDTO (int Id,string Name );
+    public record SalePolicyPutDTO (DateTime startDate, decimal saleCoof );
 
 }
