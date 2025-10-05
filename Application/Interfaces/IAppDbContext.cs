@@ -16,5 +16,6 @@ namespace Application.Interfaces
         DbSet<PricePolicy> PricePolicies { get; set; }
         DbSet<SalePolicy> SalePolicies { get; set; }
         DbSet<MovieSession> Sessions { get; set; }
+        Task<int> SaveChangesAsync(CancellationToken token = default);
     }
 }
