@@ -28,12 +28,6 @@ namespace Application.Repos
             End = DateTime.Parse($"2000-01-01 {end}");
             Duration = End - Start;
         }
-        //public TimeInterval(MovieSession session)
-        //{
-        //    Start = session.StartTime;
-        //    End = session.StartTime + session.Movie.Duration + session.CinemaHall.TechnicalBreakDuration;
-        //    Duration = End - Start;
-        //}
         /// <summary>
         /// Пересекаются ли промежутки
         /// </summary>
@@ -64,8 +58,8 @@ namespace Application.Repos
             Start = new(1, 1, 1, Start.Hour, Start.Minute, Start.Second);
             End = new(1, 1, 1, End.Hour, End.Minute, End.Second);
           
-            if (Start < End)
-                End.AddDays(1);
+            if (Start > End)
+                End=End.AddDays(1);
         }
     }
 }

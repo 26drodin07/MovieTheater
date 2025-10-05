@@ -81,11 +81,8 @@ namespace Application.Extensions
         /// <returns></returns>
         public static IQueryable<Movie> OrderByFirstSession(this IQueryable<Movie> source)
         {
-            //тут не придумал как обойти нормально фильмы у которых нет сеанса - т.е первая сеанс будет null поэтому вручную вскладываю такие фильмы в хвост
-            var withSessions = source.Where(m => m.Sessions.Any()).OrderBy(m => m.Sessions.OrderBy(x => x.ActivationDate).FirstOrDefault());
-            var withoutSessions = source.Where(m => !m.Sessions.Any());
-            var result = withoutSessions.Concat(withoutSessions);
-            return result;
+            var withSessions = source.OrderBy(m => m.Sessions.OrderBy(x => x.ActivationDate).FirstOrDefault()!.StartTime);
+            return withSessions;
         }
         /// <summary>
         /// Преобразование к DTO (В query нужны Genres и Sessions)
