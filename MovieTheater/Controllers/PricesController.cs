@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MovieTheater.Controllers
 {
+    /// <summary>
+    /// Контроллер кастомных цен/скидок
+    /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class PricesController : ControllerBase

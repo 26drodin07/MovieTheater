@@ -27,10 +27,10 @@ namespace MovieTheater.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync($"Error 400 BadRequest: {ex.Message}");
             }
-            catch (Exception) 
+            catch (Exception ex) 
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync($"Error 500 InternalServerError:");
+                await context.Response.WriteAsync($"Error 500 InternalServerError: {ex}");
             }
         }
     }
