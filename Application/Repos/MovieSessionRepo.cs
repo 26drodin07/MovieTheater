@@ -73,7 +73,7 @@ namespace Application.Repos
             return await _db.Sessions.Include(x => x.PricePolices).OrderBy(x => x.StartTime)
                 .Select(x => x.ToGetDTO(sale)).ToListAsync();
         }
-        public async Task<ICollection<SessionGroupedByFilmsDTO>> GetFilteredSessions(bool isActive, string? searchPrompt, SessionFiltersDTO filters)
+        public async Task<ICollection<SessionGroupedByFilmsDTO>> GetFilteredSessions(bool isActive, SessionFiltersDTO filters)
         {
             var sale = (await _db.SalePolicies.GetCurrentSaleAsync())?.Value ?? 1m;
             IQueryable<MovieSession> activeFilteredSessions = _db.Sessions.Include(x => x.PricePolices).Include(x=>x.Movie).Include(x=>x.CinemaHall);
@@ -81,16 +81,16 @@ namespace Application.Repos
                 activeFilteredSessions = activeFilteredSessions.Where(x => !x.IsCanceled && x.ActivationDate.AddDays(x.DurationInDays) >= DateTime.UtcNow.Date);
             else
                 activeFilteredSessions = activeFilteredSessions.Where(x => x.IsCanceled || x.ActivationDate.AddDays(x.DurationInDays) < DateTime.UtcNow.Date);
-            return await activeFilteredSessions.ApplyAllFilters(filters, sale)
-                .GroupBy(x => x.Movie).OrderBy(m => m.OrderBy(x => x.ActivationDate).FirstOrDefault())
-                .Select(x => 
+            return (await activeFilteredSessions.ApplyAllFilters(filters, sale).ToListAsync()) 
+                .GroupBy(x => x.Movie).OrderBy(m => m.OrderBy(x => x.ActivationDate).FirstOrDefault()) // Ef core не осилил такой запрос. поэтому обрабатываю уже полученные данные
+                .Select(x =>
                     new SessionGroupedByFilmsDTO(
-                        x.Key.Id, 
+                        x.Key.Id,
                         x.OrderBy(x => x.StartTime).Select(x => x.ToGetDTO(sale)).ToList())
-                    )
-                .ToListAsync();
+                    ).ToList();
+                
         }
-
+       
         public async Task<ICollection<MovieSessionGetDTO>> GetSessionsByMovie(int movieId)
         {
             var sale = (await _db.SalePolicies.GetCurrentSaleAsync())?.Value ?? 1m;

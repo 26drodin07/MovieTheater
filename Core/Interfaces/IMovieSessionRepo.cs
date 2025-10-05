@@ -17,8 +17,8 @@ namespace Core.Interfaces
         Task<ICollection<MovieSessionGetDTO>> GetSessions();
         Task<MovieSessionGetDTO> GetSessionById(int id);
         Task<ICollection<MovieSessionGetDTO>> GetSessionsByMovie(int movieId);
-        Task<ICollection<SessionGroupedByFilmsDTO>> GetFilteredSessions(bool isActive, string?searchPrompt, SessionFiltersDTO filters);
-        Task<ICollection<SessionGroupedByFilmsDTO>> GetGroupedByFilm();
+        Task<ICollection<SessionGroupedByFilmsDTO>> GetFilteredSessions(bool isActive, SessionFiltersDTO filters);
+        Task<ICollection<SessionGroupedByFilmsDTO>> GetGroupedByFilm(); //Наверное не нужно тк есть с фильтрами тоже самое, но пусть будет
         Task<MovieSessionGetDTO> AddSession(SessionPostDTO movieSession);
         Task<MovieSessionGetDTO> UpdateSession(SessionPatchDTO movieSession, int id);
         Task<int> DeleteSession(int id);
